@@ -1,8 +1,13 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, Question, Answer
-from .validators import validate_password_length
+from django.core.exceptions import ValidationError
 
+from .models import User, Question, Answer
+
+
+def validate_password_length(value):
+    if len(value) < 5:
+        raise ValidationError("Password must be at least 5 characters long.")
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
