@@ -1,0 +1,95 @@
+{% extends 'quora/base.html' %}
+
+{% block title %}{{ question.title }} - AskSimple{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h1 class="card-title">{{ question.title }}</h1>
+        <p class="card-text">{{ question.content }}</p>
+        <div class="text-muted">
+            Asked by {{ question.author.username }} on {{ question.created_at|date }}
+        </div>
+    </div>
+</div>
+
+<h2 class="mb-3">Answers</h2>
+{% for answer in answers %}
+<div class="card mb-3">
+    <div class="card-body">
+        <p class="card-text">{{ answer.content }}</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Answered by {{ answer.author.username }} on {{ answer.created_at|date }}
+            </div>
+            <div>
+                <button class="btn btn-outline-primary like-btn" data-answer-id="{{ answer.id }}">
+                    <i class="bi bi-heart{% if answer.id in user_likes %}-fill{% endif %}"></i>
+                    <span class="like-count">{{ answer.likes.count }}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info">
+    No answers yet. Be the first to answer!
+</div>
+{% endfor %}
+
+{% if user.is_authenticated %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h3>Your Answer</h3>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <textarea class="form-control" name="content" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Post Answer</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    Please <a href="{% url 'quora:login' %}">login</a> to post an answer.
+</div>
+{% endif %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.like-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const answerId = this.dataset.answerId;
+        fetch(`/answer/${answerId}/like/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const icon = this.querySelector('i');
+            const count = this.querySelector('.like-count');
+            
+            if (data.liked) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                this.classList.add('btn-primary');
+                this.classList.remove('btn-outline-primary');
+            } else {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-outline-primary');
+            }
+            
+            count.textContent = data.likes_count;
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %} 
