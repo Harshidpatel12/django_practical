@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="card-title">{{ question.title }}</h2>
+        <p class="card-text">{{ question.content }}</p>
+        <div class="text-muted">
+            Asked by {{ question.author.username }} on {{ question.created_at|date }}
+        </div>
+    </div>
+</div>
+
+<h3>Answers</h3>
+
+{% for answer in answers %}
+<div class="card mb-3">
+    <div class="card-body">
+        <p class="card-text">{{ answer.content }}</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Answered by {{ answer.author.username }} on {{ answer.created_at|date }}
+            </div>
+            <div>
+                <button class="btn btn-outline-primary like-btn" data-answer-id="{{ answer.pk }}">
+                    <span class="like-count">{{ answer.likes.count }}</span> Likes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% if user.is_authenticated %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h4>Your Answer</h4>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    {{ field.errors }}
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Post Answer</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    $('.like-btn').click(function() {
+        var answerId = $(this).data('answer-id');
+        var button = $(this);
+        
+        $.ajax({
+            url: '/answer/' + answerId + '/like/',
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function(data) {
+                button.find('.like-count').text(data.likes);
+                if (data.liked) {
+                    button.addClass('btn-primary').removeClass('btn-outline-primary');
+                } else {
+                    button.addClass('btn-outline-primary').removeClass('btn-primary');
+                }
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 
