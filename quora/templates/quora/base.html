@@ -52,30 +52,8 @@
             border: 1px solid #f5c6cb;
             margin-bottom: 15px;
         }
-        /* Form styles */
-        form {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        form div {
-            margin-bottom: 15px;
-        }
-        form label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        form input[type="text"],
-        form input[type="email"],
-        form input[type="password"],
-        form textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-        }
-        form textarea {
-            height: 150px;
-        }
     </style>
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
     <nav>
