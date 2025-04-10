@@ -17,9 +17,11 @@
     <p>{{ answer.content }}</p>
     <div>
         Answered by {{ answer.author.username }} on {{ answer.created_at|date }}
+        {% if user.is_authenticated %}
         <button onclick="likeAnswer({{ answer.id }})" class="btn">
             {% if answer.id in user_likes %}Unlike{% else %}Like{% endif %}
         </button>
+        {% endif %}
         <span>({{ answer.likes.count }} likes)</span>
     </div>
 </div>
