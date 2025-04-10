@@ -47,6 +47,20 @@ def register(request):
         
     return render(request, 'quora/register.html')
 
+@login_required
+def ask_question(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        if title and content:
+            question = Question.objects.create(
+                title=title,
+                content=content,
+                author=request.user
+            )
+            return redirect('quora:question_detail', pk=question.pk)
+    return render(request, 'quora/ask_question.html')
+
 def question_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
     answers = Answer.objects.filter(question=question)

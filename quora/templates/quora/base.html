@@ -15,6 +15,17 @@
             background: #333;
             padding: 10px;
             margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
         }
         nav a {
             color: white;
@@ -41,18 +52,46 @@
             border: 1px solid #f5c6cb;
             margin-bottom: 15px;
         }
+        /* Form styles */
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        form div {
+            margin-bottom: 15px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="password"],
+        form textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        form textarea {
+            height: 150px;
+        }
     </style>
 </head>
 <body>
     <nav>
-        <a href="{% url 'quora:home' %}">AskSimple</a>
-        <a href="{% url 'quora:home' %}">Home</a>
-        {% if user.is_authenticated %}
-            <a href="{% url 'quora:logout' %}">Logout</a>
-        {% else %}
-            <a href="{% url 'quora:login' %}">Login</a>
-            <a href="{% url 'quora:register' %}">Register</a>
-        {% endif %}
+        <div class="nav-left">
+            <a href="{% url 'quora:home' %}">AskSimple</a>
+            <a href="{% url 'quora:home' %}">Home</a>
+        </div>
+        <div class="nav-right">
+            {% if user.is_authenticated %}
+                <a href="{% url 'quora:ask_question' %}" class="btn">Ask Question</a>
+                <a href="{% url 'quora:logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'quora:login' %}">Login</a>
+                <a href="{% url 'quora:register' %}">Register</a>
+            {% endif %}
+        </div>
     </nav>
 
     {% if messages %}
